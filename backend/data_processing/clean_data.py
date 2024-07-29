@@ -11,10 +11,12 @@ def gen_clean_word_counts_df(clean_tweets_in):
     
     def remove_extra(text):
             return text.strip().replace("\n", "").replace(",", "").replace('""', '"')
-        
+
+    # This removes punctuation from stopwords so that they can be detected in pre-cleaned tweetss
+    #   
     stop_words = set(stopwords.words('english'))
     stop_words = {s.replace("'", "") for s in stop_words}
-    print(stop_words)
+    
     def remove_stop_words(tweet_in):
  
         word_tokens = word_tokenize(tweet_in.lower())
@@ -22,7 +24,8 @@ def gen_clean_word_counts_df(clean_tweets_in):
         
         return remove_extra(re.sub('[^a-z A-Z 0-9]+', '', filtered_sentence))
 
-    
+    # turning words and word counts into a dataframe 
+
     all_words = Counter(' '.join([remove_stop_words(item) for item in clean_tweets_in]).split(' '))
     keys = all_words.keys()
     values = all_words.values()
@@ -33,6 +36,9 @@ def gen_clean_word_counts_df(clean_tweets_in):
     return word_counts_df
 
 def gen_clean_tweets_df(df_in, embedding_list_in, clean_tweets_in):
+    
+    # retrieve only needed data from input_dataframe
+
     tweets_df = df_in[['id', 'created_at']].copy()
     
     datetime_df = pd.DataFrame(data=pd.to_datetime(tweets_df['created_at']).dt.strftime('%Y-%m-%d'), columns=['created_at'])
@@ -40,19 +46,19 @@ def gen_clean_tweets_df(df_in, embedding_list_in, clean_tweets_in):
     tweets_df.update(datetime_df)
     
     tweets_df.rename(columns={'id': 'author_id'}, inplace=True)
+
+    # at id for use a primary key, and embeddings and cleaned tweets
+
     tweets_df.insert(0, "id", [i for i in range(tweets_df.shape[0])], True)
 
     tweets_df.insert(0, 'embedding', embedding_list_in)
 
     tweets_df.insert(0, "text_clean", clean_tweets_in, True)
     
-    tweets_df = tweets_df.copy()[['id', 'author_id', 'created_at', 'text_clean', 'embedding']]
-    #tweets_df.update(pt_df)
-    #print(clean_tweets_sample.shape)
-    # tweets_df[]
-    print(tweets_df.columns)
-    print(tweets_df.info())
+    # reorder columns to match PostGreSQL table format
 
+    tweets_df = tweets_df.copy()[['id', 'author_id', 'created_at', 'text_clean', 'embedding']]
+    
     return tweets_df
 
 def clean_tweets(df_in):
@@ -63,7 +69,9 @@ def clean_tweet_text(tweet_data):
     tweet = tweet_data['text']
     range_list = []
     indices = [True] * len(tweet)
-    # print(tweet_data)
+    
+    # use keys withing entities to speed up removal of urls, hashtags, etc. average
+    # speed increase was around 5% +/- 2% over using just regex 
 
     range_list = ([i['indices'] for i in tweet_data['entities']['user_mentions']] + 
                   [i['indices'] for i in tweet_data['entities']['urls']] + 
@@ -80,11 +88,10 @@ def clean_tweet_text(tweet_data):
         for i in range(start_idx - 1, end_idx):
             indices[i] = False
 
-    res = ''.join(itertools.compress(tweet, indices))
-    # print(res)
-    tweet = res.lower()
-    # print(tweet)
-    # tweet = re.sub('@[^\s]+','', tweet)
+    tweet = ''.join(itertools.compress(tweet, indices)).lower()
+     
+    # remove characters that are not text or integers
+
     tweet = re.sub('[^a-z A-Z 0-9]+', '', tweet).strip()
     tweet = tweet.replace("\n", "")
     return tweet

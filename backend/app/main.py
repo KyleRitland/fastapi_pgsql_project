@@ -67,11 +67,18 @@ project code
 '''
 
 @app.get("/tweets/sentiment/", response_model=list[schemas.Sentiment])
-def get_sentiment(start_dt: str, end_dt: str, db: Session = Depends(get_db)):
-    if isinstance(start_dt, str) and isinstance(end_dt, str):
+def get_sentiment(text_in: str="", start_dt: str="", end_dt: str="", db: Session = Depends(get_db)):
+    if isinstance(text_in, str) and text_in!="": 
+        print('text_in: ', text_in)
+        tweets_sentiment = crud.get_sentiments_by_text_in(text_in=text_in)
+
+    elif isinstance(start_dt, str) and isinstance(end_dt, str) and start_dt!="" and end_dt!='':
         print('both start and end dt are strings')
         if pd.to_datetime(start_dt)<=pd.to_datetime(end_dt):
-            tweets_sentiment = crud.get_sentiments(db, start_dt=start_dt, end_dt=end_dt)
+            tweets_sentiment = crud.get_sentiments_by_date(db, start_dt=start_dt, end_dt=end_dt)
+
+    else:
+        tweets_sentiment = None
 
     if tweets_sentiment is None:
         raise HTTPException(status_code=404, detail="No tweets with keyword found")

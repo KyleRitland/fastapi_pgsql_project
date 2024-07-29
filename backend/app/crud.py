@@ -32,20 +32,25 @@ main project code
 from transformers import pipeline
 SentimentClassifier = pipeline("sentiment-analysis")
 
-def get_sentiments(db: Session, start_dt: str, end_dt: str):
+def get_sentiments_by_text_in(text_in: str):
+
+    sent = SentimentClassifier(text_in)
+
+    return [schemas.Sentiment(tweet_text=text_in, sentiment=sent[0]['label'], score=sent[0]['score'])]
+
+def get_sentiments_by_date(db: Session, start_dt: str, end_dt: str):
 
     db.execute(
         """SELECT * FROM tweets WHERE created_at BETWEEN %s AND %s""",
         (start_dt, end_dt,)
         )
+    
     tweets_to_get_sentiment = db.fetchall()
     just_tweets = [item[3] for item in tweets_to_get_sentiment]
     sent = SentimentClassifier(just_tweets)
-    sent_f = [(just_tweets[i], sent[i]['label'], sent[i]['score']) for i in range(sent)]
-    for i in sent_f:
-        print(i)
-
-    #return [schemas.Sentiment(tweet_text=item[0], sentiment=item[1], score=item[2]) for item in sent_f]
+    sent_f = [(just_tweets[i], sent[i]['label'], sent[i]['score']) for i in range(len(sent))]
+    
+    return [schemas.Sentiment(tweet_text=item[0], sentiment=item[1], score=item[2]) for item in sent_f]
 
 def get_tweet_sim(db: Session, text_in: str = "", limit: int = 0):
     print(f'text_in: {text_in}')

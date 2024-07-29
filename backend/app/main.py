@@ -1,7 +1,6 @@
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import types
 from sqlalchemy.orm import Session
 
 from . import crud, schemas
@@ -9,10 +8,7 @@ from . import crud, schemas
 
 from .db_config import create_connection
 
-
 from starlette.responses import FileResponse
-from starlette.staticfiles import StaticFiles
-
 import pandas as pd
 
 from ..data_processing.run_prog import create_tweet_data

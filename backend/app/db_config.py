@@ -10,9 +10,9 @@ from pgvector.psycopg2 import register_vector
 import numpy as np
 
 
-'''
-import psycopg2
+''' 
 
+Code to create database
 
 #establishing the connection
 conn = psycopg2.connect(
@@ -51,53 +51,25 @@ def create_connection():
 
     c = DB_connection.cursor()
 
-    #c.execute("CREATE EXTENSION IF NOT EXISTS vector");
-    
     DB_connection.commit()
-    #register_vector(DB_connection)
-
+    
     create_tweets_table(c)
     create_word_counts_table(c) 
 
     DB_connection.commit()
-    # Now upload the data as though it was a file
-
-    #data_list = [(int(row['id']), int(row['author_id']), row['created_at'], row['text'], row['text_clean'], np.array(row['embeddings'])) for index, row in df_new.iterrows()]
-
-    #execute_values(c, "INSERT INTO embeddings (title, url, content, tokens, embedding) VALUES %s", data_list)
-    import sys
-
+    
     with open('tweets_df.csv') as csv_file:
         c.copy_expert("COPY tweets FROM STDIN WITH CSV HEADER", csv_file)
 
-    '''with open('tweets_df.csv', 'r') as f:
-        next(f)
-        c.copy_from(f, 'tweets', sep=',')
-        '''
-    
     DB_connection.commit()
+
     with open('word_counts_df.csv', 'r') as f:
         next(f)
         c.copy_from(f, 'word_counts', sep=',')
 
-        
     DB_connection.commit()
 
-    '''
-    sql = """SELECT * FROM tweets WHERE created_at BETWEEN '2018-01-01' AND '2018-01-02'"""
-    print(sql)
-    print(c.execute(sql))
-    fetch = c.fetchall()
-    print(type(fetch))
-    for i in fetch:
-        print(i)
-
-    DB_connection.commit()
-    '''
-
-    return DB_connection
-    #sql = """SELECT * FROM tweets WHERE created_at BETWEEN '2018-01-01' AND '2018-01-02'"""
-        
+    return DB_connection   
 
 def create_tweets_table(cursor):
     try:

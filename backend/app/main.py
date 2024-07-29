@@ -41,10 +41,6 @@ def index():
 def exception_404_handler(request, exc):
     return FileResponse("frontend/src/App.js")
 
-#app.mount("/", StaticFiles(directory="frontend/src/"), name="ui")
-
-#Base.metadata.create_all(bind=engine)
-
 # Dependency
 
 def get_db():

@@ -2,9 +2,13 @@
 #from sqlalchemy.ext.declarative import declarative_base
 #from sqlalchemy.orm import sessionmaker
 
-from sqlalchemy import create_engine, MetaData
-import io
-import csv
+import psycopg2
+from psycopg2 import OperationalError
+from psycopg2.extras import execute_values
+
+from pgvector.psycopg2 import register_vector
+import numpy as np
+
 
 '''
 import psycopg2
@@ -35,33 +39,6 @@ print("Database created successfully........")
 conn.close()
 '''
 
-#DATABASE_URL = "postgresql+psycopg2://postgres:awe68f4asd5v63a1er98g@localhost:5432/mydatabase"
-
-#database = databases.Database(DATABASE_URL)
-#metadata = MetaData()
-
-#engine = create_engine(DATABASE_URL)
-#metadata.create_all(engine)
-
-#SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-'''
-SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://user:password@localhost:5432/mydatabase"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, pool_pre_ping=True
-)
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
-'''
-import psycopg2
-from psycopg2 import OperationalError
-from psycopg2.extras import execute_values
-
-from pgvector.psycopg2 import register_vector
-import numpy as np
 
 def create_connection():
     DB_connection = psycopg2.connect(

@@ -8,12 +8,10 @@ function App() {
   return (
     <div className="App">
     
-      {/*<header className="App-header">*/}
       <header>
         
-        {/*<img src={logo} className="App-logo" alt="logo" />*/}
         <h2>
-          LinQuest tweet project
+          FastAPI - PostGreSQL - React.js - tweet project
         </h2>
         {/*
         <a
@@ -29,7 +27,6 @@ function App() {
       
       <TweetCountRange />
       <TweetDateRange />
-      {/* <TweetDateRange /> */}
     </div>
     
   );

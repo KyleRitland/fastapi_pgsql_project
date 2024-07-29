@@ -17,17 +17,6 @@ export default function TweetCountRange() {
       console.log(tweets)
       setTweets(tweets)
     }
-
-    /*
-  useEffect(() => {
-    
-
-    if (skip && limit) {
-        fetchUsers(skip, limit);
-    }
-    //fetchUsers()
-  }, [skip, limit])
-    */
   
   function onSkipChange(evt) {
     setSkip(evt.target.value);

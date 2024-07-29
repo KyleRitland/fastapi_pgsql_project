@@ -156,7 +156,7 @@ def create_word_counts_table(cursor):
         print("word_counts table is created successfully...............")  
     except OperationalError as err:
         # pass exception to function
-        print('table creation error tweets: ', err)
+        print('table creation error word_counts: ', err)
         # set the connection to 'None' in case of error
         #conn = None
 

@@ -15,8 +15,9 @@ from starlette.staticfiles import StaticFiles
 
 import pandas as pd
 
-from .utils import clean_tweet_text_2  
+from ..data_processing.run_prog import create_tweet_data
 
+#create_tweet_data() #run code to generate data for PostGreSQL database
 
 DB_connection = create_connection()
 

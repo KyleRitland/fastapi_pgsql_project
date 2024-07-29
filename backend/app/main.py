@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from . import crud, schemas
-#from database import SessionLocal, engine
 
 from .db_config import create_connection
 
@@ -15,8 +14,10 @@ from ..data_processing.run_prog import create_tweet_data
 
 #create_tweet_data() #run code to generate data for PostGreSQL database
 
+#create connection to database
 DB_connection = create_connection()
 
+# create FastAPI() object
 app = FastAPI()
 
 # Add CORS middleware
@@ -47,6 +48,9 @@ def get_db():
     finally:
         db.close()
 
+# get tweets in database been 'skip' and 'limit', ordered by date tweet was created
+# not asked for in project requirements
+
 @app.get("/tweets/", response_model=list[schemas.Tweet])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     tweets = crud.get_tweets(db, skip=skip, limit=limit)
@@ -57,6 +61,9 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 project code
 
 '''
+
+# get sentiment of input text or tweets in date range, with sentiment determined by HuggingFace 
+# sentiment classifier, based on model 'DistilBERT base uncased finetuned SST-2'
 
 @app.get("/tweets/sentiment/", response_model=list[schemas.Sentiment])
 def get_sentiment(text_in: str="", start_dt: str="", end_dt: str="", db: Session = Depends(get_db)):
@@ -76,6 +83,10 @@ def get_sentiment(text_in: str="", start_dt: str="", end_dt: str="", db: Session
         raise HTTPException(status_code=404, detail="No tweets with keyword found")
     return tweets_sentiment
 
+# calculate similarity between input text and cleaned tweets stored in 
+# database. Allows for getting top N most similar (highest scoring) tweets with
+# there scores
+ 
 @app.get("/tweets/calculate_sim/", response_model=list[schemas.Similarity])
 def get_similarities(text_in: str, limit: int, db: Session = Depends(get_db)):
     print(f'text_in: {text_in} - type {type(text_in)}')
@@ -87,6 +98,8 @@ def get_similarities(text_in: str, limit: int, db: Session = Depends(get_db)):
     
     return tweets_sim
 
+# get top N most frequent words that appear accross all cleaned tweet texts
+
 @app.get("/tweets/top_n/", response_model=list[schemas.WordCount])
 def get_top_N(top_n_words: int, db: Session = Depends(get_db)):
     if isinstance(top_n_words, int):
@@ -95,6 +108,8 @@ def get_top_N(top_n_words: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No tweets found")
     return tweets_top_n
 
+# get all tweets that contain user-input text keyword
+
 @app.get("/tweets/keyword/", response_model=list[schemas.Tweet])
 def get_tweets_by_keyword(keyword: str, db: Session = Depends(get_db)):
     if isinstance(keyword, str):
@@ -102,6 +117,8 @@ def get_tweets_by_keyword(keyword: str, db: Session = Depends(get_db)):
     if tweets_keyword is None:
         raise HTTPException(status_code=404, detail="No tweets with keyword found")
     return tweets_keyword
+
+# get list of tweets that were created in date range, inclusive
 
 @app.get("/tweets/date_range/", response_model=list[schemas.Tweet])
 def get_tweets_by_date(start_dt: str, end_dt: str, db: Session = Depends(get_db)):

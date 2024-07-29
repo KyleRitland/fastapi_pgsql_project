@@ -4,7 +4,12 @@ from .export_data import export_dfs
 from .generate_data import get_embeddings
 
 def create_tweet_data():
+
     df = pd.read_json('17616581.tweets.jl', lines=True)
+
+    # get 'document' element of input data and get all tweets with enlish language label
+    # 'en' is selected because chosen BERT model is trained on english language text
+    
     document_df = pd.DataFrame(df['document'].to_list())
     document_df = document_df[document_df['lang'] == 'en'].copy()
 

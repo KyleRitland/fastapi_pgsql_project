@@ -1,7 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
 
-import Users from "./components/users.jsx";  // new
 import TweetCountRange from './components/tweetsCountRange.jsx';
 import TweetDateRange from './components/tweetsDateRange.jsx';
 
@@ -28,7 +27,6 @@ function App() {
         */}
       </header>
       
-      <Users />
       <TweetCountRange />
       <TweetDateRange />
       {/* <TweetDateRange /> */}

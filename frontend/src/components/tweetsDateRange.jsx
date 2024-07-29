@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { TweetDisplayDateRange } from './general_comp.jsx'
 
 const TweetsDateRangeContext = React.createContext({
     TweetRange: [], fetchTweetRange: () => {}
@@ -51,6 +52,9 @@ export default function TweetDateRange() {
         <br/>
         <button type="button" onClick={fetchTweetRange}>Get tweets in datetime range</button>
         {tweetRange?
+            TweetDisplayDateRange({tweetRange})
+        : <div>No tweets</div>}
+        {/*{tweetRange?
           <div>
             <p>Start date read: {start_dt}, End date read: {end_dt}</p>
             <p>Tweets:</p>
@@ -58,7 +62,7 @@ export default function TweetDateRange() {
            <li key={tweet.id}><p>Tweet date: {tweet.created_at}</p><p>Raw text: {tweet.text}</p><p>Cleaned text: {tweet.text_clean}</p><br/></li>
          ))}
          </div>
-        : <div>No tweets found in date range</div>}
+        : <div>No tweets found in date range</div>}*/}
     </TweetsDateRangeContext.Provider>
   )
 }

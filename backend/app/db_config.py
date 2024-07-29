@@ -59,7 +59,7 @@ Base = declarative_base()
 import psycopg2
 from psycopg2 import OperationalError
 from psycopg2.extras import execute_values
-import pgvector 
+
 from pgvector.psycopg2 import register_vector
 import numpy as np
 

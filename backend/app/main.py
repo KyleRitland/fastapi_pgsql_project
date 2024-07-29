@@ -66,6 +66,17 @@ project code
 
 '''
 
+@app.get("/tweets/sentiment/", response_model=list[schemas.Sentiment])
+def get_sentiment(start_dt: str, end_dt: str, db: Session = Depends(get_db)):
+    if isinstance(start_dt, str) and isinstance(end_dt, str):
+        print('both start and end dt are strings')
+        if pd.to_datetime(start_dt)<=pd.to_datetime(end_dt):
+            tweets_sentiment = crud.get_sentiments(db, start_dt=start_dt, end_dt=end_dt)
+
+    if tweets_sentiment is None:
+        raise HTTPException(status_code=404, detail="No tweets with keyword found")
+    return tweets_sentiment
+
 @app.get("/tweets/calculate_sim/", response_model=list[schemas.Similarity])
 def get_similarities(text_in: str, limit: int, db: Session = Depends(get_db)):
     print(f'text_in: {text_in} - type {type(text_in)}')

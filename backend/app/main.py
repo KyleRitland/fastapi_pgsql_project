@@ -52,7 +52,7 @@ def get_db():
 # not asked for in project requirements
 
 @app.get("/tweets/", response_model=list[schemas.Tweet])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def get_tweets(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     tweets = crud.get_tweets(db, skip=skip, limit=limit)
     return tweets
 

@@ -7,6 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import torch
 from transformers import BertTokenizer, BertModel
 
+import re
 
 '''
 
@@ -102,7 +103,11 @@ def get_tweets_top_n(db: Session, top_n_words: int = 5):
 
 def get_tweets_keyword(db: Session, keyword: str = "keyword"):
     
+    kw_claen = re.sub('[^a-z A-Z 0-9]+', '', keyword).strip()
+    db.execute(f"SELECT id, author_id, created_at, text_clean FROM tweets WHERE text_clean ILIKE '%{kw_claen}%'")
+    
     tweets_keyword = db.fetchall()
+    print(tweets_keyword)
     tweets_keyword = [schemas.Tweet(id=item[0], author_id=item[1], created_at=item[2], text_clean=item[3]) for item in tweets_keyword]
     
     return tweets_keyword
